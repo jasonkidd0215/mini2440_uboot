@@ -1,6 +1,12 @@
 config MTD_NAND_CORE
 	tristate
 
+config MTD_NAND_S3C2410_NAND
+	bool "MTD NAND S3C2410"
+	default n
+	help
+	  This is to set CONFIG_MTD_NAND_S3C2410_NAND macro
+
 source "drivers/mtd/nand/raw/Kconfig"
 
 source "drivers/mtd/nand/spi/Kconfig"

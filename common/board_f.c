@@ -892,17 +892,20 @@ static const init_fnc_t init_sequence_f[] = {
 	get_clocks,		/* get CPU and bus clocks (etc.) */
 #endif
 #if !defined(CONFIG_M68K)
-	timer_init,		/* initialize timer */
+	//timer_init,		/* initialize timer */
 #endif
 #if defined(CONFIG_BOARD_POSTCLK_INIT)
 	board_postclk_init,
 #endif
-	env_init,		/* initialize environment */
+	//env_init,		/* initialize environment */
 	init_baud_rate,		/* initialze baudrate settings */
 	serial_init,		/* serial communications setup */
 	console_init_f,		/* stage 1 init of console */
 	display_options,	/* say that we are here */
 	display_text_info,	/* show debugging info if required */
+	NULL,
+};
+#if 0
 	checkcpu,
 #if defined(CONFIG_SYSRESET)
 	print_resetinfo,
@@ -1002,9 +1005,16 @@ static const init_fnc_t init_sequence_f[] = {
 #endif
 	NULL,
 };
+#endif
 
 void board_init_f(ulong boot_flags)
 {
+	int *addr = 0x56000010;
+	int *data = 0x56000014;
+
+	*addr = 0x00015400;
+	*data = 0x00000000;
+
 	gd->flags = boot_flags;
 	gd->have_console = 0;
 

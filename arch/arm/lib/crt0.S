@@ -89,11 +89,9 @@ clbss_l:cmp	r0, r1			/* while not at end of BSS */
  */
 
 ENTRY(_main)
-
 /*
  * Set up initial C runtime environment and call board_init_f(0).
  */
-
 #if defined(CONFIG_TPL_BUILD) && defined(CONFIG_TPL_NEEDS_SEPARATE_STACK)
 	ldr	r0, =(CONFIG_TPL_STACK)
 #elif defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_STACK)
@@ -109,9 +107,28 @@ ENTRY(_main)
 	mov	r9, r0
 	bl	board_init_f_init_reserve
 
+	/* light fourth led */
+        ldr r4, =0x56000010
+        mov r5, #(0x00015400)
+        str r5, [r4]
+        ldr r4, =0x56000014
+        mov r5, #(0x000000E0)
+        str r5, [r4]
+
 #if defined(CONFIG_SPL_EARLY_BSS)
 	SPL_CLEAR_BSS
 #endif
+
+//clear_bss:
+//	ldr	r0, =__bss_start
+//	ldr	r1, =__bss_end
+//	mov	r2, #0x00000000
+//
+//clbss_l:
+//	str	r2, [r0]
+//	add	r0, r0, #4
+//	cmp	r0, r1
+//	ble	clbss_l
 
 	mov	r0, #0
 	bl	board_init_f
@@ -124,29 +141,29 @@ ENTRY(_main)
  * 'here' but relocated.
  */
 
-	ldr	r0, [r9, #GD_START_ADDR_SP]	/* sp = gd->start_addr_sp */
-	bic	r0, r0, #7	/* 8-byte alignment for ABI compliance */
-	mov	sp, r0
-	ldr	r9, [r9, #GD_NEW_GD]		/* r9 <- gd->new_gd */
-
-	adr	lr, here
-	ldr	r0, [r9, #GD_RELOC_OFF]		/* r0 = gd->reloc_off */
-	add	lr, lr, r0
+//	ldr	r0, [r9, #GD_START_ADDR_SP]	/* sp = gd->start_addr_sp */
+//	bic	r0, r0, #7	/* 8-byte alignment for ABI compliance */
+//	mov	sp, r0
+//	ldr	r9, [r9, #GD_NEW_GD]		/* r9 <- gd->new_gd */
+//
+//	adr	lr, here
+//	ldr	r0, [r9, #GD_RELOC_OFF]		/* r0 = gd->reloc_off */
+//	add	lr, lr, r0
 #if defined(CONFIG_CPU_V7M)
 	orr	lr, #1				/* As required by Thumb-only */
 #endif
-	ldr	r0, [r9, #GD_RELOCADDR]		/* r0 = gd->relocaddr */
-	b	relocate_code
-here:
-/*
- * now relocate vectors
- */
-
-	bl	relocate_vectors
-
-/* Set up final (full) environment */
-
-	bl	c_runtime_cpu_setup	/* we still call old routine here */
+//	ldr	r0, [r9, #GD_RELOCADDR]		/* r0 = gd->relocaddr */
+//	b	relocate_code
+//here:
+///*
+// * now relocate vectors
+// */
+//
+//	bl	relocate_vectors
+//
+///* Set up final (full) environment */
+//
+//	bl	c_runtime_cpu_setup	/* we still call old routine here */
 #endif
 #if !defined(CONFIG_SPL_BUILD) || CONFIG_IS_ENABLED(FRAMEWORK)
 
@@ -163,10 +180,11 @@ here:
 # endif
 
 #if ! defined(CONFIG_SPL_BUILD)
-	bl coloured_LED_init
-	bl red_led_on
+//	bl coloured_LED_init
+//	bl red_led_on
 #endif
 	/* call board_init_r(gd_t *id, ulong dest_addr) */
+	ldr	r9, [r9, #GD_NEW_GD]		/* r9 <- gd->new_gd */
 	mov     r0, r9                  /* gd_t */
 	ldr	r1, [r9, #GD_RELOCADDR]	/* dest_addr */
 	/* call board_init_r */

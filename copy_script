@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cp ./u-boot.bin /mnt/share
+cp ./u-boot /mnt/share/u-boot1
+cp ./board/samsung/smdk2440/boot_init.c /mnt/share

@@ -533,6 +533,10 @@ config ARCH_AT91
 	bool "Atmel AT91"
 	select SPL_BOARD_INIT if SPL && !TARGET_SMARTWEB
 
+config TARGET_SMDK2440
+       bool "Support smdk2440"
+       select CPU_ARM920T
+
 config TARGET_EDB93XX
 	bool "Support edb93xx"
 	select CPU_ARM920T
@@ -1921,6 +1925,7 @@ source "board/xilinx/Kconfig"
 source "board/xilinx/zynq/Kconfig"
 source "board/xilinx/zynqmp/Kconfig"
 source "board/phytium/durian/Kconfig"
+source "board/samsung/smdk2440/Kconfig"
 
 source "arch/arm/Kconfig.debug"
 

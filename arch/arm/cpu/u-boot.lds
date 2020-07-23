@@ -42,7 +42,9 @@ SECTIONS
 	{
 		*(.__image_copy_start)
 		*(.vectors)
-		CPUDIR/start.o (.text*)
+		CPUDIR/start.o (.text)
+		board/samsung/smdk2440/boot_init.o (.text)
+		*(.text)
 	}
 
 	/* This needs to come before *(.text*) */

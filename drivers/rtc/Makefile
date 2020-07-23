@@ -54,3 +54,4 @@ obj-$(CONFIG_RTC_S35392A) += s35392a.o
 obj-$(CONFIG_RTC_STM32) += stm32_rtc.o
 obj-$(CONFIG_SANDBOX) += sandbox_rtc.o
 obj-$(CONFIG_RTC_X1205) += x1205.o
+obj-$(CONFIG_RTC_S3C24x0) += s3c24x0_rtc.o

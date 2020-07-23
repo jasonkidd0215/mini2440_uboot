@@ -13,6 +13,7 @@
 
 #include "yaffs_bitmap.h"
 #include "yaffs_trace.h"
+#include <linux/bitops.h>
 /*
  * Chunk bitmap manipulations
  */
