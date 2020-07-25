@@ -107,14 +107,6 @@ ENTRY(_main)
 	mov	r9, r0
 	bl	board_init_f_init_reserve
 
-	/* light fourth led */
-        ldr r4, =0x56000010
-        mov r5, #(0x00015400)
-        str r5, [r4]
-        ldr r4, =0x56000014
-        mov r5, #(0x000000E0)
-        str r5, [r4]
-
 #if defined(CONFIG_SPL_EARLY_BSS)
 	SPL_CLEAR_BSS
 #endif

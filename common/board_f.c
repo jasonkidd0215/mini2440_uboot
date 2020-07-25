@@ -130,7 +130,13 @@ __weak void board_add_ram_info(int use_default)
 
 static int init_baud_rate(void)
 {
-	gd->baudrate = env_get_ulong("baudrate", 10, CONFIG_BAUDRATE);
+	int *addr = 0x56000010;
+	int *data = 0x56000014;
+
+	*addr = 0x00015400;
+	*data = 0x000000C0;
+
+	gd->baudrate = 115200;//env_get_ulong("baudrate", 10, CONFIG_BAUDRATE);
 	return 0;
 }
 
@@ -892,12 +898,12 @@ static const init_fnc_t init_sequence_f[] = {
 	get_clocks,		/* get CPU and bus clocks (etc.) */
 #endif
 #if !defined(CONFIG_M68K)
-	//timer_init,		/* initialize timer */
+	timer_init,		/* initialize timer */
 #endif
 #if defined(CONFIG_BOARD_POSTCLK_INIT)
 	board_postclk_init,
 #endif
-	//env_init,		/* initialize environment */
+	env_init,		/* initialize environment */
 	init_baud_rate,		/* initialze baudrate settings */
 	serial_init,		/* serial communications setup */
 	console_init_f,		/* stage 1 init of console */
@@ -1007,6 +1013,33 @@ static const init_fnc_t init_sequence_f[] = {
 };
 #endif
 
+#define rGPHCON    (*(volatile unsigned *)0x56000070) //Port H control
+#define rGPHUP     (*(volatile unsigned *)0x56000078) //Pull-up control H
+#define rULCON0     (*(volatile unsigned *)0x50000000) //UART 0 Line control
+#define rUCON0      (*(volatile unsigned *)0x50000004) //UART 0 Control
+#define rUFCON0     (*(volatile unsigned *)0x50000008) //UART 0 FIFO control
+#define rUMCON0     (*(volatile unsigned *)0x5000000c) //UART 0 Modem control
+#define rUBRDIV0    (*(volatile unsigned *)0x50000028) //UART 0 Baud rate divisor
+#define rUTRSTAT0   (*(volatile unsigned *)0x50000010) //UART 0 Tx/Rx status
+
+#ifdef __BIG_ENDIAN
+#define rUTXH0 (*(volatile unsigned char *)0x50000023) //UART 0 Transmission Hold
+#else
+#define rUTXH0 (*(volatile unsigned char *)0x50000020) //UART 0 Transmission Hold
+#endif
+
+void uart0_init(void)
+{
+    rGPHCON  = 0xa0;    // GPH2,GPH3用作TXD0,RXD0，分别在位[5:4]，[7:6]，设为10使用该功能
+    rGPHUP   = 0x0c;     // GPH2,GPH3内部上拉
+
+    rULCON0  = 0x03;     // 8N1(8个数据位，无较验，1个停止位)
+    rUCON0   = 0x805;     // 接收模式选择查询方式，UART时钟源为PCLK
+    rUFCON0  = 0x00;     // 不使用FIFO
+    rUMCON0  = 0x00;     // 不使用流控
+    rUBRDIV0 = 115200; // 波特率为115200
+}
+
 void board_init_f(ulong boot_flags)
 {
 	int *addr = 0x56000010;
@@ -1018,9 +1051,18 @@ void board_init_f(ulong boot_flags)
 	gd->flags = boot_flags;
 	gd->have_console = 0;
 
+	
+	/*uart0_init();
+	for(int i=0;i<100;i++)
+	{
+		while((rUTRSTAT0&0x2)==0x0);    //等待发送成功
+    		rUTXH0 = ('A'+ (i%25));
+	}*/
+
 	if (initcall_run_list(init_sequence_f))
 		hang();
-
+	//for test
+	hang();
 #if !defined(CONFIG_ARM) && !defined(CONFIG_SANDBOX) && \
 		!defined(CONFIG_EFI_APP) && !CONFIG_IS_ENABLED(X86_64) && \
 		!defined(CONFIG_ARC)

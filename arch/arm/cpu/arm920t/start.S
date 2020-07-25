@@ -60,6 +60,9 @@ copyex:
 #define INTMSK 0x4A000008
 #define INTSUBMSK 0x4A00001C
 #define CLKDIVN 0x4C000014
+#define MPLLCON	0x4C000004
+//#define S3C2440_MPLL_400MHZ ((0x5c<<12) | (0x01<<4) | (0x01<<0))
+#define S3C2440_MPLL_400MHZ ((0x7f<<12) | (0x02<<4) | (0x01<<0))
 	
 	ldr	r0, =WTCON
 	mov	r1, #0x0
@@ -83,6 +86,14 @@ copyex:
 	ldr	r0, =CLKDIVN
 	mov	r1, #5
 	str	r1, [r0]
+
+//	mrc p15, 0, r1, c1, c0, 0
+//	orr r1, r1, #0xc0000000
+//	mcr p15, 0, r1, c1, c0, 0
+//
+//	ldr r0, =MPLLCON
+//	ldr r1, =S3C2440_MPLL_400MHZ
+//	str r1, [r0]
 
 	/*
 	 * we do sys-critical inits only at reboot,
@@ -125,7 +136,6 @@ stack_setup:
         ldr r4, =0x56000014
         mov r5, #(0x00000000)
         str r5, [r4]
-	//b	stack_setup
 
 	ldr	r0, =CONFIG_SYS_TEXT_BASE
 	sub	r0, r0, #0x4000 /* MALLOC LEN */

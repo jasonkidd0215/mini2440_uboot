@@ -18,8 +18,8 @@
  * (easy to change)
  */
 #define CONFIG_S3C24X0		/* This is a SAMSUNG S3C24x0-type SoC */
-#define CONFIG_S3C2410		/* specifically a SAMSUNG S3C2410 SoC */
-#define CONFIG_SMDK2410		/* on a SAMSUNG SMDK2410 Board */
+#define CONFIG_S3C2440		/* specifically a SAMSUNG S3C2410 SoC */
+//#define CONFIG_SMDK2410		/* on a SAMSUNG SMDK2410 Board */
 #define CONFIG_SMDK2440		/* on a SAMSUNG SMDK2440 Board */
 
 #define CONFIG_SYS_GENERIC_BOARD
@@ -43,7 +43,7 @@
 /*
  * select serial console configuration
  */
-#define CONFIG_S3C24X0_SERIAL
+//#define CONFIG_S3C24X0_SERIAL
 #define CONFIG_SERIAL1		1	/* we use SERIAL 1 on SMDK2410 */
 
 /************************************************************
@@ -192,8 +192,6 @@
 #define CONFIG_SYS_SDRAM_BASE	PHYS_SDRAM_1
 #define CONFIG_SYS_INIT_SP_ADDR	(CONFIG_SYS_SDRAM_BASE + 0x1000 - \
 				GENERATED_GBL_DATA_SIZE)
-
-//#define CONFIG_BOARD_EARLY_INIT_F
 
 /* for relocate when start boot */
 #define CFG_GBL_DATA_SIZE	128

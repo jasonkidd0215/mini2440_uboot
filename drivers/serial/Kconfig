@@ -783,6 +783,11 @@ config SIFIVE_SERIAL
 	help
 	  This driver supports the SiFive UART. If unsure say N.
 
+config SMDK24X0_SERIAL
+	bool "SMDK24X0 UART support"
+	help
+	  This item can support CONFIG_SMDK24X0_SERIAL to enable serial_s3c24x0.c compile
+
 config STI_ASC_SERIAL
 	bool "STMicroelectronics on-chip UART"
 	depends on DM_SERIAL && ARCH_STI

@@ -263,6 +263,7 @@ int nand_read_ll(unsigned char *buf, unsigned long start_addr, int size)
  * m = M (the value for divider M)+ 8, p = P (the value for divider P) + 2
  */
 #define S3C2440_MPLL_400MHZ     ((0x5c<<12)|(0x01<<4)|(0x01))
+//#define S3C2440_MPLL_400MHZ     ((0x7f<<12)|(0x02<<4)|(0x01))
 #define S3C2440_MPLL_200MHZ     ((0x5c<<12)|(0x01<<4)|(0x02))
 #define S3C2440_MPLL_100MHZ     ((0x5c<<12)|(0x01<<4)|(0x03))
 #define S3C2440_UPLL_96MHZ      ((0x38<<12)|(0x02<<4)|(0x01))
@@ -293,6 +294,7 @@ void clock_init(void)
 
         /* to reduce PLL lock time, adjust the LOCKTIME register */
         clk_power->LOCKTIME = 0xFFFFFFFF;
+        //clk_power->LOCKTIME = 0x00FFFFFF;
 
         /* configure UPLL */
         clk_power->UPLLCON = S3C2440_UPLL_48MHZ;
