@@ -60,9 +60,6 @@ copyex:
 #define INTMSK 0x4A000008
 #define INTSUBMSK 0x4A00001C
 #define CLKDIVN 0x4C000014
-#define MPLLCON	0x4C000004
-//#define S3C2440_MPLL_400MHZ ((0x5c<<12) | (0x01<<4) | (0x01<<0))
-#define S3C2440_MPLL_400MHZ ((0x7f<<12) | (0x02<<4) | (0x01<<0))
 	
 	ldr	r0, =WTCON
 	mov	r1, #0x0
@@ -75,7 +72,6 @@ copyex:
 	//mvn 	r1, #0
 	ldr	r0, =INTMSK
 	str	r1, [r0]
-	//ldr	r1, =0x3ff
 	ldr	r1, =0x7fff
 	ldr	r0, =INTSUBMSK
 	str	r1, [r0]
@@ -87,59 +83,26 @@ copyex:
 	mov	r1, #5
 	str	r1, [r0]
 
-//	mrc p15, 0, r1, c1, c0, 0
-//	orr r1, r1, #0xc0000000
-//	mcr p15, 0, r1, c1, c0, 0
-//
-//	ldr r0, =MPLLCON
-//	ldr r1, =S3C2440_MPLL_400MHZ
-//	str r1, [r0]
-
 	/*
 	 * we do sys-critical inits only at reboot,
 	 * not when booting from ram!
 	 */
 #ifndef CONFIG_SKIP_LOWLEVEL_INIT
-#if 0
-	adr	r0, _start
-	ldr	r1, =CONFIG_SYS_TEXT_BASE
-	cmp	r0, r1
-	blne	cpu_init_crit
-#endif
 	bl	cpu_init_crit
-
 #endif
 
 
 relocate:
-	//mov	r0, #0
 	adr	r0, _code_start
 	ldr	r1, =CONFIG_SYS_TEXT_BASE
 	cmp	r0, r1
 	bhi	stack_setup
-	/* light first Led */
-        //ldr r4, =0x56000010
-        //mov r5, #(0x00015400)
-        //str r5, [r4]
-        //ldr r4, =0x56000014
-        //mov r5, #(0x000001C0)
-        //str r5, [r4]
 
 	b	CopyPrepare
 
 stack_setup:
 	
-	/* light all Led test */
-        ldr r4, =0x56000010
-        mov r5, #(0x00015400)
-        str r5, [r4]
-        ldr r4, =0x56000014
-        mov r5, #(0x00000000)
-        str r5, [r4]
-
 	ldr	r0, =CONFIG_SYS_TEXT_BASE
-	sub	r0, r0, #0x4000 /* MALLOC LEN */
-	sub	r0, r0, #CFG_GBL_DATA_SIZE
 
 #ifdef CONFIG_USE_IRQ
 	/*temporary add, this should not be executed*/
@@ -163,20 +126,6 @@ stack_setup:
 //	ble	clbss_l
 //	b	_main
 	ldr	pc,=_main
-
-JUMP1:
-	/* jump to _main in SDRAM */
-	ldr	r2, =_start
-	ldr	r3, =_main
-	sub	r2, r3, r2
-	ldr	r3, =CONFIG_SYS_TEXT_BASE
-	add	r2, r2, r3
-/*------------------------------------------------------------------------------*/
-
-	.globl	c_runtime_cpu_setup
-c_runtime_cpu_setup:
-
-	mov	pc, lr
 
 /*
  *************************************************************************

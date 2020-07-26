@@ -12,6 +12,8 @@
 #include <linux/ctype.h>
 #include <asm/io.h>
 
+DECLARE_GLOBAL_DATA_PTR;
+
 char *display_options_get_banner_priv(bool newlines, const char *build_tag,
 				      char *buf, int size)
 {
@@ -45,6 +47,11 @@ int display_options(void)
 	char buf[DISPLAY_OPTIONS_BANNER_LENGTH];
 
 	display_options_get_banner(true, buf, sizeof(buf));
+	printf("global data base: %x\n", gd);
+	printf("global data length: %x\n", sizeof(*gd)/sizeof(char));
+	printf("global data malloc base: %x\n", gd->malloc_base);
+	printf("global data malloc length: %x\n", gd->malloc_limit);
+
 	printf("%s", buf);
 
 	return 0;
