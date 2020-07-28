@@ -111,16 +111,16 @@ ENTRY(_main)
 	SPL_CLEAR_BSS
 #endif
 
-//clear_bss:
-//	ldr	r0, =__bss_start
-//	ldr	r1, =__bss_end
-//	mov	r2, #0x00000000
-//
-//clbss_l:
-//	str	r2, [r0]
-//	add	r0, r0, #4
-//	cmp	r0, r1
-//	ble	clbss_l
+clear_bss:
+	ldr	r0, =__bss_start
+	ldr	r1, =__bss_end
+	mov	r2, #0x00000000
+
+clbss_l:
+	str	r2, [r0]
+	add	r0, r0, #4
+	cmp	r0, r1
+	ble	clbss_l
 
 	mov	r0, #0
 	bl	board_init_f
@@ -133,11 +133,11 @@ ENTRY(_main)
  * 'here' but relocated.
  */
 
-//	ldr	r0, [r9, #GD_START_ADDR_SP]	/* sp = gd->start_addr_sp */
-//	bic	r0, r0, #7	/* 8-byte alignment for ABI compliance */
-//	mov	sp, r0
-//	ldr	r9, [r9, #GD_NEW_GD]		/* r9 <- gd->new_gd */
-//
+	ldr	r0, [r9, #GD_START_ADDR_SP]	/* sp = gd->start_addr_sp */
+	bic	r0, r0, #7	/* 8-byte alignment for ABI compliance */
+	mov	sp, r0
+	ldr	r9, [r9, #GD_NEW_GD]		/* r9 <- gd->new_gd */
+
 //	adr	lr, here
 //	ldr	r0, [r9, #GD_RELOC_OFF]		/* r0 = gd->reloc_off */
 //	add	lr, lr, r0
@@ -159,9 +159,10 @@ ENTRY(_main)
 #endif
 #if !defined(CONFIG_SPL_BUILD) || CONFIG_IS_ENABLED(FRAMEWORK)
 
-#if !defined(CONFIG_SPL_EARLY_BSS)
-	SPL_CLEAR_BSS
-#endif
+//Don't need it since BSS has been cleared before board_init_f
+//#if !defined(CONFIG_SPL_EARLY_BSS)
+//	SPL_CLEAR_BSS
+//#endif
 
 # ifdef CONFIG_SPL_BUILD
 	/* Use a DRAM stack for the rest of SPL, if requested */

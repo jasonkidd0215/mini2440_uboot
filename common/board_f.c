@@ -130,12 +130,6 @@ __weak void board_add_ram_info(int use_default)
 
 static int init_baud_rate(void)
 {
-	int *addr = 0x56000010;
-	int *data = 0x56000014;
-
-	*addr = 0x00015400;
-	*data = 0x000000C0;
-
 	gd->baudrate = 115200;//env_get_ulong("baudrate", 10, CONFIG_BAUDRATE);
 	return 0;
 }
@@ -1016,8 +1010,6 @@ static const init_fnc_t init_sequence_f[] = {
 #define STR(s)	#s
 void board_init_f(ulong boot_flags)
 {
-	int i = 0;
-
 	gd->flags = boot_flags;
 	gd->have_console = 0;
 
@@ -1030,8 +1022,6 @@ void board_init_f(ulong boot_flags)
 
 	if (initcall_run_list(init_sequence_f))
 		hang();
-	//for test
-	hang();
 #if !defined(CONFIG_ARM) && !defined(CONFIG_SANDBOX) && \
 		!defined(CONFIG_EFI_APP) && !CONFIG_IS_ENABLED(X86_64) && \
 		!defined(CONFIG_ARC)
