@@ -180,7 +180,7 @@ CopyPrepare:
 #define oNFCONT 0x04
 #define oNFCMD 0x08
 #define oNFSTAT 0x20
-#define DW_STACK_START 0x33F0FFFC
+#define DW_STACK_START 0x33e0FFFC
  	@reset NAND
 	mov r1, #NAND_CTL_BASE
 	ldr r2, =( (7<<12)|(7<<8)|(7<<4)|(0<<0) )

@@ -443,6 +443,10 @@ static int reserve_uboot(void)
 		 * round down to next 4 kB limit
 		 */
 		gd->relocaddr -= gd->mon_len;
+		if(gd->relocaddr > CONFIG_SYS_TEXT_BASE)
+			gd->relocaddr = CONFIG_SYS_TEXT_BASE;
+		else
+			printf("Warning: mon_len is larger than 1MB!!!\n");
 		gd->relocaddr &= ~(4096 - 1);
 	#if defined(CONFIG_E500) || defined(CONFIG_MIPS)
 		/* round down to next 64 kB limit so that IVPR stays aligned */
@@ -909,9 +913,6 @@ static const init_fnc_t init_sequence_f[] = {
 	console_init_f,		/* stage 1 init of console */
 	display_options,	/* say that we are here */
 	display_text_info,	/* show debugging info if required */
-	NULL,
-};
-#if 0
 	checkcpu,
 #if defined(CONFIG_SYSRESET)
 	print_resetinfo,
@@ -1011,53 +1012,21 @@ static const init_fnc_t init_sequence_f[] = {
 #endif
 	NULL,
 };
-#endif
 
-#define rGPHCON    (*(volatile unsigned *)0x56000070) //Port H control
-#define rGPHUP     (*(volatile unsigned *)0x56000078) //Pull-up control H
-#define rULCON0     (*(volatile unsigned *)0x50000000) //UART 0 Line control
-#define rUCON0      (*(volatile unsigned *)0x50000004) //UART 0 Control
-#define rUFCON0     (*(volatile unsigned *)0x50000008) //UART 0 FIFO control
-#define rUMCON0     (*(volatile unsigned *)0x5000000c) //UART 0 Modem control
-#define rUBRDIV0    (*(volatile unsigned *)0x50000028) //UART 0 Baud rate divisor
-#define rUTRSTAT0   (*(volatile unsigned *)0x50000010) //UART 0 Tx/Rx status
-
-#ifdef __BIG_ENDIAN
-#define rUTXH0 (*(volatile unsigned char *)0x50000023) //UART 0 Transmission Hold
-#else
-#define rUTXH0 (*(volatile unsigned char *)0x50000020) //UART 0 Transmission Hold
-#endif
-
-void uart0_init(void)
-{
-    rGPHCON  = 0xa0;    // GPH2,GPH3用作TXD0,RXD0，分别在位[5:4]，[7:6]，设为10使用该功能
-    rGPHUP   = 0x0c;     // GPH2,GPH3内部上拉
-
-    rULCON0  = 0x03;     // 8N1(8个数据位，无较验，1个停止位)
-    rUCON0   = 0x805;     // 接收模式选择查询方式，UART时钟源为PCLK
-    rUFCON0  = 0x00;     // 不使用FIFO
-    rUMCON0  = 0x00;     // 不使用流控
-    rUBRDIV0 = 115200; // 波特率为115200
-}
-
+#define STR(s)	#s
 void board_init_f(ulong boot_flags)
 {
-	int *addr = 0x56000010;
-	int *data = 0x56000014;
-
-	*addr = 0x00015400;
-	*data = 0x00000000;
+	int i = 0;
 
 	gd->flags = boot_flags;
 	gd->have_console = 0;
 
-	
-	/*uart0_init();
-	for(int i=0;i<100;i++)
-	{
-		while((rUTRSTAT0&0x2)==0x0);    //等待发送成功
-    		rUTXH0 = ('A'+ (i%25));
-	}*/
+	//while(init_sequence_f[i] != NULL)
+	//{
+	//	printf("This is func%d: %s\n", i, STR(init_sequence_f[i]));
+	//	//printf("This is func%d: %s\n", i, #(init_sequence_f[i]));
+	//	i++;
+	//}
 
 	if (initcall_run_list(init_sequence_f))
 		hang();

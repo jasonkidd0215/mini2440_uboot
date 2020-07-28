@@ -195,5 +195,6 @@
 
 /* for relocate when start boot */
 #define CFG_GBL_DATA_SIZE	128
+#define DEBUG
 
 #endif /* __CONFIG_H */
