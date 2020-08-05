@@ -84,12 +84,12 @@
 //#define CONFIG_CMD_REGINFO This macro will lead to a PPC functions, should not be used in arm
 //#define CONFIG_CMD_USB
 
-#define CONFIG_SYS_HUSH_PARSER
+//#define CONFIG_SYS_HUSH_PARSER
 //#define CONFIG_CMDLINE_EDITING
 
 /* autoboot */
 //#define CONFIG_BOOTDELAY	5
-#define CONFIG_BOOT_RETRY_TIME	-1
+#define CONFIG_BOOT_RETRY_TIME  -1
 #define CONFIG_RESET_TO_RETRY
 #define CONFIG_ZERO_BOOTDELAY_CHECK
 
@@ -169,7 +169,7 @@
  * NAND configuration
  */
 #ifdef CONFIG_CMD_NAND
-#define CONFIG_NAND_S3C2410
+//#define CONFIG_NAND_S3C2410
 #define CONFIG_SYS_S3C2410_NAND_HWECC
 #define CONFIG_SYS_MAX_NAND_DEVICE	1
 #define CONFIG_SYS_NAND_BASE		0x4E000000

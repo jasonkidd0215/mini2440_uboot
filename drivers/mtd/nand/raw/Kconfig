@@ -108,6 +108,11 @@ config NAND_DAVINCI
 	  Enable this driver for NAND flash controllers available in TI Davinci
 	  and Keystone2 platforms
 
+config NAND_S3C2440
+	bool "Support Samsung flash for mini2440 board"
+	help
+	  Enable samsung flash for mini2440 board
+
 config NAND_DENALI
 	bool
 	select SYS_NAND_SELF_INIT
