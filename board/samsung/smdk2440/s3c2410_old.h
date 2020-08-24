@@ -66,7 +66,7 @@ typedef enum {
 
 
 /* include common stuff */
-#include "s3c24x0.h"
+#include "s3c24x0_old.h"
 
 
 static inline S3C24X0_MEMCTL * const S3C24X0_GetBase_MEMCTL(void)

@@ -20,8 +20,19 @@
 #define S3C2410_NFCONF_TWRPH0(x)   ((x)<<4)
 #define S3C2410_NFCONF_TWRPH1(x)   ((x)<<0)
 
+#define S3C2440_NFCONT_EN          (1<<0)
+#define S3C2440_NFCONT_INITECC     (1<<4)
+#define S3C2440_NFCONT_nFCE        (1<<1)
+
+#define S3C2440_NFCONF_TACLS(x)    ((x)<<12)
+#define S3C2440_NFCONF_TWRPH0(x)   ((x)<<8)
+#define S3C2440_NFCONF_TWRPH1(x)   ((x)<<4)
+
 #define S3C2410_ADDR_NALE 4
 #define S3C2410_ADDR_NCLE 8
+
+#define S3C2440_ADDR_NALE 12
+#define S3C2440_ADDR_NCLE 8
 
 #ifdef CONFIG_NAND_SPL
 
@@ -38,29 +49,46 @@ static void nand_read_buf(struct mtd_info *mtd, u_char *buf, int len)
 }
 #endif
 
+static int s3c2440_nand_select_chip(struct mtd_info *mtd, int chip)
+{
+	struct s3c24x0_nand *nand = s3c24x0_get_base_nand();
+	//in default function nand_reset, -1 means deselect
+	if(chip == -1)
+		nand->nfcont |= S3C2440_NFCONT_nFCE;
+	else
+		nand->nfcont &= ~S3C2440_NFCONT_nFCE;
+
+	return 0;
+}
+
 static void s3c24x0_hwcontrol(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 {
 	struct nand_chip *chip = mtd->priv;
 	struct s3c24x0_nand *nand = s3c24x0_get_base_nand();
 
-	debug("hwcontrol(): 0x%02x 0x%02x\n", cmd, ctrl);
+	//debug("hwcontrol(): 0x%02x 0x%02x\n", cmd, ctrl);
 
 	if (ctrl & NAND_CTRL_CHANGE) {
 		ulong IO_ADDR_W = (ulong)nand;
 
-		if (!(ctrl & NAND_CLE))
-			IO_ADDR_W |= S3C2410_ADDR_NCLE;
-		if (!(ctrl & NAND_ALE))
-			IO_ADDR_W |= S3C2410_ADDR_NALE;
+		//CLE&ALE should be low activate as NCE, but the usage of this
+		//function is with the macro, so it is opposite with NCE, it's also
+		//a weired design
+		//if (!(ctrl & NAND_CLE))
+		if(ctrl & NAND_CLE)
+			IO_ADDR_W |= S3C2440_ADDR_NCLE;
+		//if (!(ctrl & NAND_ALE))
+		if(ctrl & NAND_ALE)
+			IO_ADDR_W |= S3C2440_ADDR_NALE;
 
 		chip->IO_ADDR_W = (void *)IO_ADDR_W;
 
-		if (ctrl & NAND_NCE)
-			writel(readl(&nand->nfconf) & ~S3C2410_NFCONF_nFCE,
-			       &nand->nfconf);
+		if (!(ctrl & NAND_NCE))
+			writel(readl(&nand->nfcont) | S3C2440_NFCONT_nFCE,
+			       &nand->nfcont);
 		else
-			writel(readl(&nand->nfconf) | S3C2410_NFCONF_nFCE,
-			       &nand->nfconf);
+			writel(readl(&nand->nfcont) & ~S3C2440_NFCONT_nFCE,
+			       &nand->nfcont);
 	}
 
 	if (cmd != NAND_CMD_NONE)
@@ -70,7 +98,7 @@ static void s3c24x0_hwcontrol(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 static int s3c24x0_dev_ready(struct mtd_info *mtd)
 {
 	struct s3c24x0_nand *nand = s3c24x0_get_base_nand();
-	debug("dev_ready\n");
+	//debug("dev_ready\n");
 	return readl(&nand->nfstat) & 0x01;
 }
 
@@ -125,29 +153,30 @@ int board_nand_init(struct nand_chip *nand)
 	twrph0 = CONFIG_S3C24XX_TWRPH0;
 	twrph1 =  CONFIG_S3C24XX_TWRPH1;
 #else
-	tacls = 4;
+	tacls = 8;
 	twrph0 = 8;
 	twrph1 = 8;
 #endif
-
-	cfg = S3C2410_NFCONF_EN;
-	cfg |= S3C2410_NFCONF_TACLS(tacls - 1);
-	cfg |= S3C2410_NFCONF_TWRPH0(twrph0 - 1);
-	cfg |= S3C2410_NFCONF_TWRPH1(twrph1 - 1);
+	cfg = 0;
+	cfg |= S3C2440_NFCONF_TACLS(tacls - 1);
+	cfg |= S3C2440_NFCONF_TWRPH0(twrph0 - 1);
+	cfg |= S3C2440_NFCONF_TWRPH1(twrph1 - 1);
 	writel(cfg, &nand_reg->nfconf);
+
+	cfg = S3C2440_NFCONT_EN | S3C2440_NFCONT_INITECC | S3C2440_NFCONT_nFCE;
+	writel(cfg, &nand_reg->nfcont);
 
 	/* initialize nand_chip data structure */
 	nand->IO_ADDR_R = (void *)&nand_reg->nfdata;
 	nand->IO_ADDR_W = (void *)&nand_reg->nfdata;
 
-	nand->select_chip = NULL;
+	nand->select_chip = s3c2440_nand_select_chip;
 
 	/* read_buf and write_buf are default */
 	/* read_byte and write_byte are default */
 #ifdef CONFIG_NAND_SPL
 	nand->read_buf = nand_read_buf;
 #endif
-
 	/* hwcontrol always must be implemented */
 	nand->cmd_ctrl = s3c24x0_hwcontrol;
 
@@ -162,7 +191,9 @@ int board_nand_init(struct nand_chip *nand)
 	nand->ecc.bytes = CONFIG_SYS_NAND_ECCBYTES;
 	nand->ecc.strength = 1;
 #else
-	nand->ecc.mode = NAND_ECC_SOFT;
+	//HWECC has some problems when read flash, so change to ECC_NONE for temporary, should figure out why later
+	//nand->ecc.mode = NAND_ECC_SOFT;
+	nand->ecc.mode = NAND_ECC_NONE;
 #endif
 
 #ifdef CONFIG_S3C2410_NAND_BBT

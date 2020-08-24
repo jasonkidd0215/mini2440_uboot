@@ -31,6 +31,8 @@
 #ifndef __S3C24X0_H__
 #define __S3C24X0_H__
 
+#include <linux/types.h>
+
 typedef volatile u8 S3C24X0_REG8;
 typedef volatile u16    S3C24X0_REG16;
 typedef volatile u32    S3C24X0_REG32;

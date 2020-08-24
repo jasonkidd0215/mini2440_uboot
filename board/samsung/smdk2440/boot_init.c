@@ -1,8 +1,4 @@
-//#include <common.h>
-#include "s3c2410.h"
-#include "s3c24x0.h"
-//#include <linux/io.h>
-
+#include "s3c2410_old.h"
 
 int nand_read_ll(unsigned char *buf, unsigned long start_addr, int size);
 
