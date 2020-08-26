@@ -157,7 +157,7 @@ SMRDATA:
       .word 0x00000700
       .word 0x00000700
       .word 0x0001c740
-      .word 0x00000700
+      .word 0x00000740
       .word 0x0001c740
       .word 0x00018005
       .word 0x00018005

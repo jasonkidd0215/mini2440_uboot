@@ -12,4 +12,12 @@ config SYS_SOC
 config SYS_CONFIG_NAME
 	default "smdk2440"
 
+config DRIVER_DM9000
+	bool
+	default y
+
+config DM9000_BASE
+	hex
+	default 0x20000000
+
 endif

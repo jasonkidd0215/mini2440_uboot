@@ -58,6 +58,9 @@ TODO: external MII is not functional, only internal at the moment.
 
 #include "dm9000x.h"
 
+#define DM9000_IO			CONFIG_DM9000_BASE
+#define DM9000_DATA			(CONFIG_DM9000_BASE + 4)
+
 /* Board/System/Debug information/definition ---------------- */
 
 /* #define CONFIG_DM9000_DEBUG */
