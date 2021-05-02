@@ -106,7 +106,8 @@ int board_init(void)
 	gd->bd->bi_arch_number = MACH_TYPE_MINI2440;
 
 	/* adress of boot parameters */
-	gd->bd->bi_boot_params = 0x30000100;
+	//gd->bd->bi_boot_params = 0x30000100;
+	gd->bd->bi_boot_params = 0x30500000;
 
 	icache_enable();
 	dcache_enable();

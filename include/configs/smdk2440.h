@@ -75,7 +75,7 @@
 //#define CONFIG_CMD_DATE
 #define CONFIG_CMD_DHCP
 //#define CONFIG_CMD_ELF
-#define CONFIG_CMD_PING
+//#define CONFIG_CMD_PING This macro has been enabled in .config, remove this
 //#define CONFIG_CMD_REGINFO This macro will lead to a PPC functions, should not be used in arm
 //#define CONFIG_CMD_USB
 
