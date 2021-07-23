@@ -402,7 +402,8 @@ static void boot_jump_linux(bootm_headers_t *images, int flag)
 	if (IMAGE_ENABLE_OF_LIBFDT && images->ft_len)
 		r2 = (unsigned long)images->ft_addr;
 	else
-		r2 = gd->bd->bi_boot_params;
+		r2 = 0x30000000;
+		//r2 = gd->bd->bi_boot_params;
 
 	if (!fake) {
 #ifdef CONFIG_ARMV7_NONSEC
